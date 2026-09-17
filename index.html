@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+<title>鴻門宴・楚漢角力</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+TC:wght@400;500;600;700;900&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#181310;
+    --ink2:#221b16;
+    --ink3:#2b231c;
+    --parchment:#efe6d2;
+    --parchment-dim:#c9bd9d;
+    --parchment-faint:#a89b7c;
+    --chu:#a6301d;
+    --chu-dim:#7a2417;
+    --chu-glow:rgba(166,48,29,.35);
+    --han:#2c4d73;
+    --han-dim:#203a58;
+    --han-glow:rgba(44,77,115,.35);
+    --bronze:#c3a05a;
+    --bronze-dim:#8d7440;
+    --ok:#5c8a5c;
+    --bad:#a6301d;
+    --radius:14px;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(ellipse 900px 500px at 15% -10%, #352a1f 0%, transparent 60%),
+      radial-gradient(ellipse 700px 500px at 110% 10%, #2a2318 0%, transparent 55%),
+      var(--ink);
+    color:var(--parchment);
+    font-family:'Noto Serif TC', serif;
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  .app{max-width:480px; margin:0 auto; min-height:100vh; position:relative; padding-bottom:28px;}
+  button{font-family:inherit; cursor:pointer; -webkit-appearance:none; appearance:none; border:none;}
+  input{font-family:inherit;}
+  h1,h2,h3{margin:0;}
+  .hidden{display:none !important;}
+
+  /* ---------- decorative brush divider ---------- */
+  .divider{width:56px; height:2px; background:linear-gradient(90deg,transparent,var(--bronze),transparent); margin:16px auto;}
+
+  /* ---------- COVER ---------- */
+  .cover{padding:44px 26px 28px; text-align:center;}
+  .seal-logo{
+    width:84px; height:84px; border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, #c04127, var(--chu) 65%, var(--chu-dim));
+    color:var(--parchment); font-family:'Ma Shan Zheng',cursive; font-size:38px;
+    display:flex; align-items:center; justify-content:center; margin:0 auto 18px;
+    box-shadow:0 0 0 3px var(--ink), 0 0 0 5px var(--bronze-dim), 0 10px 24px -8px rgba(0,0,0,.7);
+  }
+  .cover .title{font-family:'Ma Shan Zheng',cursive; font-size:58px; line-height:1.15; color:var(--parchment); letter-spacing:.03em;}
+  .cover .eyebrow{font-family:'Noto Sans TC',sans-serif; font-size:12px; letter-spacing:.35em; color:var(--bronze); margin-bottom:6px; font-weight:700;}
+  .cover .subtitle{font-size:14.5px; color:var(--parchment-dim); margin-top:6px; letter-spacing:.08em;}
+  .cover .desc{font-size:14.5px; line-height:1.9; color:var(--parchment-dim); margin:22px 4px 6px; text-align:left;}
+  .cover .desc b{color:var(--parchment);}
+
+  .team-setup{margin:22px 0 6px; display:flex; gap:10px;}
+  .team-field{flex:1; background:var(--ink2); border:1px solid var(--bronze-dim); border-radius:12px; padding:10px 12px; text-align:left;}
+  .team-field label{display:block; font-family:'Noto Sans TC'; font-size:11px; color:var(--bronze); margin-bottom:4px; font-weight:700;}
+  .team-field input{width:100%; background:transparent; border:none; color:var(--parchment); font-size:15px; font-weight:700; outline:none; font-family:'Noto Serif TC';}
+  .team-field.chu{border-color:var(--chu-dim);}
+  .team-field.han{border-color:var(--han-dim);}
+
+  .time-setup{margin:14px 0 22px; display:flex; align-items:center; justify-content:center; gap:10px; font-family:'Noto Sans TC'; font-size:13px; color:var(--parchment-dim);}
+  .time-setup input{width:56px; text-align:center; background:var(--ink2); border:1px solid var(--bronze-dim); border-radius:8px; color:var(--parchment); font-size:15px; padding:6px 4px;}
+
+  .btn-primary{
+    width:100%; padding:15px; border-radius:12px; font-size:17px; font-weight:700;
+    background:linear-gradient(180deg,#c0432a,var(--chu)); color:var(--parchment);
+    box-shadow:0 6px 0 var(--chu-dim), 0 10px 18px -6px rgba(0,0,0,.6);
+    letter-spacing:.15em; font-family:'Noto Sans TC';
+    transition:transform .08s;
+  }
+  .btn-primary:active{transform:translateY(4px); box-shadow:0 2px 0 var(--chu-dim);}
+
+  .cover-links{display:flex; gap:10px; justify-content:center; margin-top:16px; flex-wrap:wrap;}
+  .link-btn{
+    background:var(--ink2); border:1px solid var(--bronze-dim); color:var(--parchment-dim);
+    padding:9px 16px; border-radius:20px; font-size:13px; font-family:'Noto Sans TC'; font-weight:500;
+  }
+
+  /* ---------- GAME SCREEN ---------- */
+  .topbar{padding:14px 16px 8px;}
+  .status-row{display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; font-family:'Noto Sans TC';}
+  .turn-pill{padding:5px 14px; border-radius:20px; font-weight:900; font-size:13px; letter-spacing:.05em; transition:background .3s;}
+  .turn-pill.chu{background:var(--chu); color:var(--parchment); box-shadow:0 0 14px var(--chu-glow);}
+  .turn-pill.han{background:var(--han); color:var(--parchment); box-shadow:0 0 14px var(--han-glow);}
+  .timer-wrap{display:flex; align-items:center; gap:8px;}
+  .timer{font-variant-numeric:tabular-nums; font-weight:900; color:var(--bronze); font-size:16px; letter-spacing:.03em;}
+  .pause-btn{width:26px; height:26px; border-radius:50%; background:var(--ink2); border:1px solid var(--bronze-dim); color:var(--bronze); font-size:11px; display:flex; align-items:center; justify-content:center;}
+
+  .power-bar{display:flex; height:36px; border-radius:9px; overflow:hidden; border:1px solid var(--bronze-dim); position:relative; background:var(--ink2);}
+  .power-fill{display:flex; align-items:center; font-family:'Noto Sans TC'; font-size:12px; font-weight:900; transition:flex-grow .5s ease;}
+  .power-fill.chu{background:linear-gradient(90deg,var(--chu-dim),var(--chu)); justify-content:flex-start; padding-left:10px; color:var(--parchment);}
+  .power-fill.han{background:linear-gradient(90deg,var(--han),var(--han-dim)); justify-content:flex-end; padding-right:10px; color:var(--parchment);}
+  .power-mid{position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); font-family:'Ma Shan Zheng',cursive; font-size:13px; color:var(--parchment); background:var(--ink); padding:2px 10px; border-radius:20px; border:1px solid var(--bronze); white-space:nowrap; z-index:2;}
+
+  .board{display:grid; grid-template-columns:repeat(4,1fr); grid-auto-rows:76px; gap:6px; padding:14px 16px;}
+  .tile{
+    position:relative; background:var(--ink2); border:1px solid var(--bronze-dim); border-radius:10px;
+    padding:5px 6px; display:flex; flex-direction:column; justify-content:space-between; overflow:hidden;
+  }
+  .tile .num{font-family:'Noto Sans TC'; font-size:10px; color:var(--bronze); font-weight:900;}
+  .tile .label{font-size:10.5px; color:var(--parchment-dim); line-height:1.2; font-weight:500;}
+  .tile.start{background:linear-gradient(135deg,var(--ink3),var(--ink2)); border-color:var(--bronze);}
+  .tile.finish{background:linear-gradient(135deg,var(--bronze-dim),var(--ink2)); border-color:var(--bronze);}
+  .tile.finish .label{color:var(--parchment);}
+  .badge{position:absolute; top:4px; right:4px; width:16px; height:16px; border-radius:50%; font-size:9px; font-weight:900; display:flex; align-items:center; justify-content:center; font-family:'Noto Sans TC';}
+  .badge.plot{background:#4a4038; color:var(--parchment-dim);}
+  .badge.people{background:var(--bronze-dim); color:var(--ink);}
+  .badge.strategy{background:#5c3a3a; color:var(--parchment);}
+  .tokens{position:absolute; bottom:3px; left:4px; display:flex; gap:3px;}
+  .token{width:15px; height:15px; border-radius:50%; font-size:9px; display:flex; align-items:center; justify-content:center; font-family:'Ma Shan Zheng',cursive; color:var(--parchment); border:1px solid rgba(0,0,0,.4); box-shadow:0 2px 4px rgba(0,0,0,.5);}
+  .token.chu{background:var(--chu);}
+  .token.han{background:var(--han);}
+
+  .legend{display:flex; gap:14px; justify-content:center; padding:2px 16px 6px; font-family:'Noto Sans TC'; font-size:10.5px; color:var(--parchment-faint); flex-wrap:wrap;}
+  .legend span{display:inline-flex; align-items:center; gap:4px;}
+  .legend i{width:12px; height:12px; border-radius:50%; display:inline-block;}
+
+  .controls{padding:10px 16px 4px; display:flex; flex-direction:column; align-items:center; gap:12px;}
+  .dice{width:60px; height:60px; background:var(--parchment); border-radius:13px; display:grid; grid-template-columns:repeat(3,1fr); grid-template-rows:repeat(3,1fr); padding:9px; box-shadow:0 5px 0 var(--bronze-dim), 0 10px 16px -6px rgba(0,0,0,.6);}
+  .pip{width:9px; height:9px; border-radius:50%; background:var(--ink); margin:auto; opacity:0;}
+  .pip.on{opacity:1;}
+  .roll-btn{
+    padding:14px 40px; border-radius:12px; font-size:16px; font-weight:900; font-family:'Noto Sans TC'; letter-spacing:.1em;
+    background:linear-gradient(180deg,#345d88,var(--han)); color:var(--parchment);
+    box-shadow:0 6px 0 var(--han-dim), 0 10px 16px -6px rgba(0,0,0,.6);
+  }
+  .roll-btn.chu-color{background:linear-gradient(180deg,#c0432a,var(--chu)); box-shadow:0 6px 0 var(--chu-dim), 0 10px 16px -6px rgba(0,0,0,.6);}
+  .roll-btn:disabled{opacity:.4; box-shadow:none;}
+  .roll-btn:active:not(:disabled){transform:translateY(4px); box-shadow:0 2px 0;}
+  .roll-hint{font-family:'Noto Sans TC'; font-size:12px; color:var(--parchment-faint); text-align:center; min-height:16px;}
+
+  .fab-row{display:flex; justify-content:center; gap:10px; padding:14px 16px 4px;}
+  .fab{background:var(--ink2); border:1px solid var(--bronze-dim); color:var(--parchment-dim); padding:9px 16px; border-radius:20px; font-size:12.5px; font-family:'Noto Sans TC'; font-weight:700;}
+
+  /* ---------- OVERLAY PANELS ---------- */
+  .overlay{position:fixed; inset:0; background:rgba(10,8,6,.72); display:flex; align-items:flex-end; justify-content:center; z-index:60; backdrop-filter:blur(2px);}
+  .overlay.center{align-items:center; padding:16px;}
+  .panel{
+    background:var(--ink2); width:100%; max-width:480px; max-height:88vh; overflow-y:auto;
+    border-radius:20px 20px 0 0; padding:22px 20px 28px; border-top:1px solid var(--bronze-dim);
+    box-shadow:0 -10px 30px rgba(0,0,0,.5);
+  }
+  .overlay.center .panel{border-radius:18px; max-height:82vh;}
+  .panel-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;}
+  .panel-title{font-family:'Ma Shan Zheng',cursive; font-size:26px; color:var(--parchment);}
+  .close-x{width:30px; height:30px; border-radius:50%; background:var(--ink3); color:var(--parchment-dim); font-size:15px; display:flex; align-items:center; justify-content:center;}
+
+  .rule-item{display:flex; gap:10px; margin-bottom:12px; font-size:13.5px; line-height:1.7; color:var(--parchment-dim);}
+  .rule-item .n{flex:none; width:22px; height:22px; border-radius:50%; background:var(--bronze-dim); color:var(--ink); font-family:'Noto Sans TC'; font-weight:900; font-size:11px; display:flex; align-items:center; justify-content:center; margin-top:1px;}
+  .rule-item b{color:var(--parchment);}
+
+  .char-section-title{font-family:'Noto Sans TC'; font-size:12px; letter-spacing:.2em; color:var(--bronze); font-weight:900; margin:16px 0 8px;}
+  .char-card{display:flex; gap:12px; background:var(--ink3); border:1px solid var(--bronze-dim); border-radius:12px; padding:12px; margin-bottom:10px;}
+  .char-seal{flex:none; width:42px; height:42px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'Ma Shan Zheng',cursive; font-size:20px; color:var(--parchment);}
+  .char-seal.chu{background:radial-gradient(circle at 35% 30%,#c0432a,var(--chu) 70%);}
+  .char-seal.han{background:radial-gradient(circle at 35% 30%,#3a6291,var(--han) 70%);}
+  .char-name{font-weight:900; font-size:14.5px; color:var(--parchment); margin-bottom:3px;}
+  .char-tag{font-family:'Noto Sans TC'; font-size:10px; color:var(--bronze); font-weight:700; margin-left:6px;}
+  .char-bio{font-size:12.5px; line-height:1.6; color:var(--parchment-dim);}
+
+  .teacher-block{background:var(--ink3); border:1px solid var(--bronze-dim); border-radius:12px; padding:12px 14px; margin-bottom:12px;}
+  .teacher-block h4{font-family:'Noto Sans TC'; font-size:12.5px; color:var(--bronze); margin-bottom:8px; letter-spacing:.05em;}
+  .teacher-block p, .teacher-block li{font-size:13px; line-height:1.75; color:var(--parchment-dim);}
+  .teacher-block ul{margin:0; padding-left:18px;}
+
+  /* ---------- QUESTION MODAL ---------- */
+  .q-tag{display:inline-block; font-family:'Noto Sans TC'; font-size:10.5px; font-weight:900; padding:3px 10px; border-radius:20px; margin-bottom:10px; letter-spacing:.1em;}
+  .q-tag.plot{background:#4a4038; color:var(--parchment-dim);}
+  .q-tag.people{background:var(--bronze-dim); color:var(--ink);}
+  .q-tag.strategy{background:#5c3a3a; color:var(--parchment);}
+  .q-title{font-family:'Ma Shan Zheng',cursive; font-size:24px; color:var(--parchment); margin-bottom:6px;}
+  .q-text{font-size:15px; line-height:1.8; color:var(--parchment); margin-bottom:16px;}
+  .q-points{font-family:'Noto Sans TC'; font-size:11.5px; color:var(--bronze); margin-bottom:14px;}
+  .options{display:flex; flex-direction:column; gap:10px;}
+  .opt-btn{
+    display:flex; align-items:flex-start; gap:10px; text-align:left; background:var(--ink3);
+    border:1.5px solid var(--bronze-dim); border-radius:12px; padding:12px 14px; font-size:13.5px; line-height:1.6; color:var(--parchment-dim);
+  }
+  .opt-btn .letter{flex:none; width:24px; height:24px; border-radius:50%; background:var(--ink); border:1px solid var(--bronze-dim); color:var(--bronze); font-family:'Noto Sans TC'; font-weight:900; font-size:12px; display:flex; align-items:center; justify-content:center;}
+  .opt-btn.correct{border-color:var(--ok); background:rgba(92,138,92,.18); color:var(--parchment);}
+  .opt-btn.correct .letter{background:var(--ok); color:var(--ink); border-color:var(--ok);}
+  .opt-btn.incorrect{border-color:var(--bad); background:rgba(166,48,29,.15); color:var(--parchment);}
+  .opt-btn.incorrect .letter{background:var(--bad); color:var(--parchment); border-color:var(--bad);}
+  .opt-btn:disabled{opacity:.55;}
+
+  .result-banner{margin-top:14px; padding:12px 14px; border-radius:12px; font-family:'Noto Sans TC'; font-weight:900; font-size:14px; display:none; align-items:center; gap:8px;}
+  .result-banner.show{display:flex;}
+  .result-banner.ok{background:rgba(92,138,92,.2); color:#a8d3a8; border:1px solid var(--ok);}
+  .result-banner.bad{background:rgba(166,48,29,.2); color:#e3a79c; border:1px solid var(--bad);}
+  .explain-box{margin-top:10px; font-size:13px; line-height:1.75; color:var(--parchment-dim); background:var(--ink3); border-left:3px solid var(--bronze); padding:10px 12px; border-radius:6px; display:none;}
+  .explain-box.show{display:block;}
+  .continue-btn{width:100%; margin-top:16px; padding:14px; border-radius:12px; font-family:'Noto Sans TC'; font-weight:900; font-size:15px; letter-spacing:.1em; background:var(--bronze); color:var(--ink); display:none;}
+  .continue-btn.show{display:block;}
+
+  /* ---------- END SCREEN ---------- */
+  .end-screen{padding:40px 24px 30px; text-align:center;}
+  .end-screen .eyebrow{font-family:'Noto Sans TC'; font-size:12px; letter-spacing:.3em; color:var(--bronze); font-weight:700; margin-bottom:8px;}
+  .end-title{font-family:'Ma Shan Zheng',cursive; font-size:38px; color:var(--parchment); margin-bottom:18px; line-height:1.3;}
+  .end-scorebar{margin:0 0 8px;}
+  .end-scores{display:flex; justify-content:space-between; font-family:'Noto Sans TC'; font-size:13px; color:var(--parchment-dim); margin-bottom:22px;}
+  .end-scores b{font-size:22px; display:block; margin-top:2px;}
+  .end-scores .chu-t b{color:var(--chu);}
+  .end-scores .han-t b{color:var(--han);}
+
+  .history-card{
+    background:linear-gradient(180deg,var(--ink3),var(--ink2)); border:1px solid var(--bronze-dim); border-radius:16px;
+    padding:20px 18px; text-align:left; margin-bottom:18px;
+  }
+  .history-card h3{font-family:'Ma Shan Zheng',cursive; font-size:22px; color:var(--bronze); margin-bottom:10px;}
+  .history-card p{font-size:14px; line-height:1.9; color:var(--parchment-dim); margin:0 0 10px;}
+  .history-card p:last-child{margin-bottom:0;}
+  .history-card b{color:var(--parchment);}
+
+  .discuss-card{background:var(--ink3); border:1px solid var(--bronze-dim); border-radius:16px; padding:18px; text-align:left; margin-bottom:18px;}
+  .discuss-card h3{font-family:'Noto Sans TC'; font-size:13px; letter-spacing:.15em; color:var(--bronze); margin-bottom:12px; font-weight:900;}
+  .discuss-card ol{margin:0; padding-left:20px;}
+  .discuss-card li{font-size:13.5px; line-height:1.8; color:var(--parchment-dim); margin-bottom:8px;}
+
+  .review-toggle{width:100%; padding:13px; border-radius:12px; background:var(--ink2); border:1px solid var(--bronze-dim); color:var(--parchment); font-family:'Noto Sans TC'; font-weight:700; font-size:13.5px; margin-bottom:12px;}
+  .review-list{display:none; text-align:left; margin-bottom:14px;}
+  .review-list.show{display:block;}
+  .review-item{background:var(--ink3); border-radius:10px; padding:12px 14px; margin-bottom:8px; font-size:12.5px; line-height:1.7; color:var(--parchment-dim);}
+  .review-item .rq{color:var(--parchment); font-weight:700; margin-bottom:4px;}
+  .review-item .ra{color:#a8d3a8;}
+
+  .restart-btn{width:100%; padding:15px; border-radius:12px; font-size:15px; font-weight:900; letter-spacing:.1em; background:var(--bronze); color:var(--ink); font-family:'Noto Sans TC'; margin-top:4px;}
+
+  /* ---------- larger screens / projector ---------- */
+  @media (min-width:700px){
+    .app{max-width:760px;}
+    .cover .title{font-size:76px;}
+    .board{grid-auto-rows:96px; gap:8px; padding:18px 22px;}
+    .tile .label{font-size:12px;}
+    .tile .num{font-size:11px;}
+    .dice{width:76px; height:76px;}
+    .roll-btn{padding:16px 52px; font-size:18px;}
+    .q-text{font-size:17px;}
+    .opt-btn{font-size:14.5px;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important; animation:none !important;}
+  }
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+  <!-- ============ COVER ============ -->
+  <section class="cover" id="screen-cover">
+    <div class="seal-logo">鴻</div>
+    <div class="eyebrow">史記・項羽本紀</div>
+    <div class="title">鴻門宴</div>
+    <div class="subtitle">楚 漢 角 力 ・ 智 謀 棋 局</div>
+
+    <div class="desc">
+      一場宴席，一念之差，決定了誰能贏得天下。<br>
+      擲骰前行，答對問題累積<b>勢力值</b>，走過項羽與劉邦之間最驚心動魄的一夜——<br>
+      看看你這一組，讀懂了《史記》多少智謀與人性。
+    </div>
+
+    <div class="team-setup">
+      <div class="team-field chu">
+        <label>楚軍陣營</label>
+        <input id="input-chu-name" type="text" value="楚軍" maxlength="8">
+      </div>
+      <div class="team-field han">
+        <label>漢軍陣營</label>
+        <input id="input-han-name" type="text" value="漢軍" maxlength="8">
+      </div>
+    </div>
+
+    <div class="time-setup">
+      <span>遊戲時間</span>
+      <input id="input-minutes" type="number" min="8" max="40" value="20" inputmode="numeric">
+      <span>分鐘</span>
+    </div>
+
+    <button class="btn-primary" onclick="startGame()">開 始 遊 戲</button>
+
+    <div class="cover-links">
+      <button class="link-btn" onclick="openPanel('panel-rules')">📜 遊戲規則</button>
+      <button class="link-btn" onclick="openPanel('panel-chars')">🏮 人物介紹</button>
+      <button class="link-btn" onclick="openPanel('panel-teacher')">🎓 教師指南</button>
+    </div>
+  </section>
+
+  <!-- ============ GAME SCREEN ============ -->
+  <section class="hidden" id="screen-game">
+    <div class="topbar">
+      <div class="status-row">
+        <div class="turn-pill chu" id="turn-pill">輪到：楚軍</div>
+        <div class="timer-wrap">
+          <button class="pause-btn" id="pause-btn" onclick="togglePause()">Ⅱ</button>
+          <div class="timer" id="timer-display">20:00</div>
+        </div>
+      </div>
+      <div class="power-bar">
+        <div class="power-fill chu" id="power-chu" style="flex-grow:1;">0</div>
+        <div class="power-fill han" id="power-han" style="flex-grow:1;">0</div>
+        <div class="power-mid">勢力</div>
+      </div>
+    </div>
+
+    <div class="legend">
+      <span><i style="background:#4a4038"></i>情節</span>
+      <span><i style="background:var(--bronze-dim)"></i>人物</span>
+      <span><i style="background:#5c3a3a"></i>智謀</span>
+      <span><i style="background:var(--chu)"></i>楚軍位置</span>
+      <span><i style="background:var(--han)"></i>漢軍位置</span>
+    </div>
+
+    <div class="board" id="board"></div>
+
+    <div class="controls">
+      <div class="dice" id="dice">
+        <div class="pip"></div><div class="pip"></div><div class="pip"></div>
+        <div class="pip"></div><div class="pip"></div><div class="pip"></div>
+        <div class="pip"></div><div class="pip"></div><div class="pip"></div>
+      </div>
+      <button class="roll-btn chu-color" id="roll-btn" onclick="rollDice()">擲 骰 前 進</button>
+      <div class="roll-hint" id="roll-hint">輪到楚軍擲骰，走到哪一格，就挑戰哪一題！</div>
+    </div>
+
+    <div class="fab-row">
+      <button class="fab" onclick="openPanel('panel-chars')">🏮 人物卡</button>
+      <button class="fab" onclick="openPanel('panel-rules')">📜 規則</button>
+    </div>
+  </section>
+
+  <!-- ============ END SCREEN ============ -->
+  <section class="hidden end-screen" id="screen-end">
+    <div class="eyebrow">遊 戲 結 束</div>
+    <div class="end-title" id="end-title">鴻門宴・落幕</div>
+
+    <div class="end-scorebar">
+      <div class="power-bar">
+        <div class="power-fill chu" id="end-power-chu" style="flex-grow:1;"></div>
+        <div class="power-fill han" id="end-power-han" style="flex-grow:1;"></div>
+        <div class="power-mid">最終勢力</div>
+      </div>
+      <div class="end-scores">
+        <div class="chu-t"><span id="end-chu-name">楚軍</span><b id="end-chu-score">0</b></div>
+        <div class="han-t"><span id="end-han-name">漢軍</span><b id="end-han-score">0</b></div>
+      </div>
+    </div>
+
+    <div class="history-card">
+      <h3>史書怎麼說：歷史的真相</h3>
+      <p>鴻門宴當下，項羽擁兵約<b>四十萬</b>，劉邦僅<b>十萬</b>，論實力，項羽大可輕易除去劉邦。然而他一念猶豫，聽了項伯一席話、見了劉邦一番謝罪，終究「默然不應」，放虎歸山。</p>
+      <p>四年之後，楚漢相爭在垓下畫下句點——<b>項羽兵敗，自刎於烏江</b>；<b>劉邦建立大漢帝國</b>，成為漢高祖。范增那句「豎子不足與謀，奪項王天下者，必沛公也」，竟一語成讖。</p>
+      <p>無論這一局你們的勢力值誰高誰低，歷史的天平，早在鴻門宴那一夜的猶豫之間，悄悄傾斜。</p>
+    </div>
+
+    <div class="discuss-card">
+      <h3>延伸思考・課堂討論</h3>
+      <ol>
+        <li>項羽「不忍」殺劉邦，是婦人之仁，還是缺乏政治決斷？你怎麼看？</li>
+        <li>范增與張良同為謀士，兩人的謀略風格、下場有何不同？</li>
+        <li>司馬遷寫樊噲「瞋目視項王，頭髮上指，目眥盡裂」，這樣的細節描寫對刻畫人物有什麼作用？試再舉一例。</li>
+        <li>如果曹無傷沒有告密，鴻門宴還會發生嗎？歷史是否可能因此改寫？</li>
+      </ol>
+    </div>
+
+    <button class="review-toggle" onclick="toggleReview()">📖 展開本局所有題目・總複習（適合考前重讀）</button>
+    <div class="review-list" id="review-list"></div>
+
+    <button class="restart-btn" onclick="resetGame()">重 新 開 始</button>
+  </section>
+
+</div>
+
+<!-- ============ RULES PANEL ============ -->
+<div class="overlay hidden" id="overlay-rules" onclick="closeOnBackdrop(event,'overlay-rules')">
+  <div class="panel">
+    <div class="panel-head">
+      <div class="panel-title">遊戲規則</div>
+      <button class="close-x" onclick="closePanel('overlay-rules')">✕</button>
+    </div>
+    <div class="rule-item"><div class="n">1</div><div>全班分成<b>楚軍</b>與<b>漢軍</b>兩大陣營，輪流由代表擲骰前進，格數決定你們讀到鴻門宴的哪一段情節。</div></div>
+    <div class="rule-item"><div class="n">2</div><div>走到的格子會出現一道題目，全隊討論後選出答案，<b>答對得勢力值，答錯不得分</b>，但一定會看到正解與解說。</div></div>
+    <div class="rule-item"><div class="n">3</div><div>格子分三種：<b>情節</b>（10分）、<b>人物</b>（10分）、<b>智謀</b>（15分，較有難度），棋盤共 20 格，依照鴻門宴的真實情節順序排列。</div></div>
+    <div class="rule-item"><div class="n">4</div><div>真正決勝負的不是誰先走到終點，而是<b>誰的勢力值累積得比較高</b>——就像史書裡，一時的兵力優勢不代表最後的贏家。</div></div>
+    <div class="rule-item"><div class="n">5</div><div>時間到，或雙方都走到第 20 格「范增拔劍嘆」，遊戲立即結束，公布最終勢力與歷史真相。</div></div>
+    <div class="rule-item"><div class="n">6</div><div>隨時可以點擊「人物卡」查詢雙方陣營的角色背景，幫助你們作答。</div></div>
+  </div>
+</div>
+
+<!-- ============ CHARACTERS PANEL ============ -->
+<div class="overlay hidden" id="overlay-chars" onclick="closeOnBackdrop(event,'overlay-chars')">
+  <div class="panel">
+    <div class="panel-head">
+      <div class="panel-title">人物介紹</div>
+      <button class="close-x" onclick="closePanel('overlay-chars')">✕</button>
+    </div>
+
+    <div class="char-section-title">楚 營 陣 容</div>
+    <div class="char-card">
+      <div class="char-seal chu">項</div>
+      <div>
+        <div class="char-name">項羽 <span class="char-tag">西楚霸王</span></div>
+        <div class="char-bio">勇冠三軍、力能扛鼎，但個性直率、耳根軟。鴻門宴上一再猶豫，放走劉邦，種下日後兵敗的伏筆。</div>
+      </div>
+    </div>
+    <div class="char-card">
+      <div class="char-seal chu">范</div>
+      <div>
+        <div class="char-name">范增 <span class="char-tag">亞父・首席謀士</span></div>
+        <div class="char-bio">項羽最重要的謀臣，眼光犀利，力主先發制人除去劉邦。宴後怒斥「豎子不足與謀」，一語成讖。</div>
+      </div>
+    </div>
+    <div class="char-card">
+      <div class="char-seal chu">伯</div>
+      <div>
+        <div class="char-name">項伯 <span class="char-tag">項羽叔父</span></div>
+        <div class="char-bio">因與張良有舊恩，連夜通風報信，宴上更以身掩護劉邦，是這場危機能夠化解的關鍵人物。</div>
+      </div>
+    </div>
+    <div class="char-card">
+      <div class="char-seal chu">莊</div>
+      <div>
+        <div class="char-name">項莊 <span class="char-tag">項羽從弟</span></div>
+        <div class="char-bio">奉范增之命藉舞劍行刺劉邦，「項莊舞劍，意在沛公」因此成為千古名句。</div>
+      </div>
+    </div>
+
+    <div class="char-section-title">漢 營 陣 容</div>
+    <div class="char-card">
+      <div class="char-seal han">劉</div>
+      <div>
+        <div class="char-name">劉邦 <span class="char-tag">沛公</span></div>
+        <div class="char-bio">先入關中，自知兵力懸殊，赴宴時姿態放得極低、謝罪得體，展現高明的政治手腕與應變能力。</div>
+      </div>
+    </div>
+    <div class="char-card">
+      <div class="char-seal han">張</div>
+      <div>
+        <div class="char-name">張良 <span class="char-tag">首席謀士</span></div>
+        <div class="char-bio">冷靜沉著，善用與項伯的舊交化解危機，是劉邦能全身而退最重要的推手。</div>
+      </div>
+    </div>
+    <div class="char-card">
+      <div class="char-seal han">樊</div>
+      <div>
+        <div class="char-name">樊噲 <span class="char-tag">猛將</span></div>
+        <div class="char-bio">勇猛忠義，闖帳護主、瞋目斥項羽，一番慷慨陳詞讓項羽無言以對，是全場最具戲劇張力的角色。</div>
+      </div>
+    </div>
+    <div class="char-card">
+      <div class="char-seal han">曹</div>
+      <div>
+        <div class="char-name">曹無傷 <span class="char-tag">左司馬</span></div>
+        <div class="char-bio">私通項羽告密，引爆這場危機，事後遭劉邦誅殺，是整起事件的導火線人物。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ TEACHER GUIDE PANEL ============ -->
+<div class="overlay hidden" id="overlay-teacher" onclick="closeOnBackdrop(event,'overlay-teacher')">
+  <div class="panel">
+    <div class="panel-head">
+      <div class="panel-title">教師指南</div>
+      <button class="close-x" onclick="closePanel('overlay-teacher')">✕</button>
+    </div>
+    <div class="teacher-block">
+      <h4>建議 30 分鐘課堂流程</h4>
+      <ul>
+        <li><b>0–3 分鐘</b>：分組（楚軍／漢軍），簡述鴻門宴背景。</li>
+        <li><b>3–5 分鐘</b>：說明規則，示範擲骰與答題一次。</li>
+        <li><b>5–24 分鐘</b>：正式對戰（可設定遊戲時間 18–20 分鐘）。</li>
+        <li><b>24–30 分鐘</b>：公布結局、對照歷史真相，帶討論題收尾。</li>
+      </ul>
+    </div>
+    <div class="teacher-block">
+      <h4>操作方式</h4>
+      <p>建議以一支手機或平板連接投影，由老師或各組派出的代表輪流操作擲骰、選答案；也可各組自備手機各自開啟本頁面同步討論，由老師手機作為公用計分板。</p>
+    </div>
+    <div class="teacher-block">
+      <h4>設計用意</h4>
+      <p>棋盤 20 格依《史記・項羽本紀》鴻門宴原文情節順序排列，涵蓋雙方陣營八位要角。移動格數只決定讀到哪一段情節，<b>真正的勝負取決於答題正確率</b>，藉此淡化運氣、強化文本理解與人物分析。</p>
+      <p>結局刻意呈現「遊戲勢力值」與「歷史真相」的落差——項羽初期軍力遠勝卻優柔寡斷，最終仍敗於劉邦——引導學生反思決斷力、識人之明與政治智慧的重要性，可銜接後續的人物評論寫作或小組辯論。</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============ QUESTION MODAL ============ -->
+<div class="overlay center hidden" id="overlay-question">
+  <div class="panel" id="question-panel"></div>
+</div>
+
+<script>
+/* ============================================================
+   DATA — 20 tiles, chronological order of 鴻門宴 (史記·項羽本紀)
+============================================================ */
+const TILES = [
+  { id:1, type:'plot', label:'背景：先入關中', points:10,
+    q:'鴻門宴發生的背景是什麼？劉邦為何令項羽震怒？',
+    options:['劉邦先入關中，且派兵把守函谷關，欲自王關中','劉邦擅自稱帝','劉邦私通項羽的謀士','劉邦攻打項羽的封地彭城'],
+    correct:0,
+    explain:'劉邦依楚懷王「先入定關中者王之」之約先入關中，又派兵守函谷關阻擋項羽，因而觸怒了率四十萬大軍而來的項羽。' },
+  { id:2, type:'plot', label:'曹無傷告密', points:10,
+    q:'曹無傷向項羽告發劉邦，內容主要是什麼？',
+    options:['說劉邦已經稱帝','說劉邦欲王關中，使子嬰為相，珍寶盡有之','說劉邦欲聯合齊國夾擊項羽','說劉邦欲刺殺項羽'],
+    correct:1,
+    explain:'曹無傷派人告訴項羽：劉邦想在關中稱王，讓秦王子嬰做丞相，把秦朝珍寶全部佔為己有，這番話直接激怒了項羽。' },
+  { id:3, type:'people', label:'范增其人', points:10,
+    q:'范增在鴻門宴中的身分與立場是？',
+    options:['項羽的謀士，人稱「亞父」，極力主張除去劉邦','劉邦的謀士','項羽的部將，負責舞劍','中立的說客'],
+    correct:0,
+    explain:'范增是項羽最重要的謀臣，被尊稱「亞父」。他敏銳察覺劉邦有稱王天下的野心，力勸項羽趁早剷除隱患。' },
+  { id:4, type:'strategy', label:'范增的判斷', points:15,
+    q:'范增從劉邦哪些舉止變化，判斷他有稱王天下之心？',
+    options:['劉邦公開稱帝','劉邦招兵買馬','劉邦入關前貪財好色，入關後財物無所取、婦女無所幸，行為反常','劉邦築城稱王'],
+    correct:2,
+    explain:'范增指出：劉邦在山東時貪財好色，入關後卻對財物、婦女毫無所取，「此其志不在小」，判斷他志向不凡，必須及早除去。' },
+  { id:5, type:'plot', label:'項伯夜訪張良', points:10,
+    q:'項伯為何連夜私見張良？',
+    options:['奉項羽之命勸降劉邦','因與張良有舊交，欲救他一命，勸他脫身避禍','欲刺探劉邦軍情','欲與劉邦結盟對抗項羽'],
+    correct:1,
+    explain:'項伯與張良有舊恩，擔心張良隨劉邦一同遭殃，於是夜馳劉邦軍營私見張良，要他一起離開，卻反被張良說動去見劉邦。' },
+  { id:6, type:'people', label:'張良應變', points:10,
+    q:'張良得知項伯來意後，做了什麼關鍵決定？',
+    options:['立刻將實情告訴劉邦，並引項伯與劉邦相見','隨項伯逃走，棄劉邦於不顧','隱瞞消息，獨自對抗項羽','立刻返回韓國'],
+    correct:0,
+    explain:'張良沒有獨自逃命，而是把項伯的來意告訴劉邦，並引二人相見，讓劉邦有機會拉攏項伯、化解危機，展現忠誠與謀略。' },
+  { id:7, type:'strategy', label:'劉邦拉攏項伯', points:15,
+    q:'劉邦如何在一夕之間說動項伯替自己說情？',
+    options:['以武力威脅項伯','贈送大量珍寶收買','與項伯約為婚姻，並表明入關後秋毫無犯、只待項王到來','承諾將關中讓給項羽'],
+    correct:2,
+    explain:'劉邦言辭謙卑，強調自己不敢背叛，並與項伯約為兒女親家，拉近關係，成功說動項伯回營為他緩頰。' },
+  { id:8, type:'plot', label:'項伯勸項羽', points:10,
+    q:'項伯回營後，用什麼理由勸項羽放過劉邦？',
+    options:['說劉邦兵力遠勝項羽','說劉邦先破秦有大功，若擊之不義，不如趁機善待他','說劉邦已經投降','說范增的計謀有誤'],
+    correct:1,
+    explain:'項伯以「今人有大功而擊之，不義也，不如因善遇之」說動項羽，項羽因而答應不擊劉邦，為隔日的鴻門宴埋下伏筆。' },
+  { id:9, type:'people', label:'項羽的性格', points:10,
+    q:'項羽輕易被項伯一席話說動，反映出他怎樣的性格弱點？',
+    options:['缺乏決斷、容易受言語動搖','剛愎自用，完全不聽人言','心機深沉，故意放走劉邦','冷靜謀劃，早有全盤計畫'],
+    correct:0,
+    explain:'項羽個性直率卻缺乏堅定的政治判斷，這樣的猶疑不決，也預示了鴻門宴上最終放走劉邦的結局。' },
+  { id:10, type:'plot', label:'劉邦謝罪', points:10,
+    q:'劉邦在鴻門宴上如何向項羽謝罪？',
+    options:['拒絕道歉，反指責項羽','沉默不語，任憑項羽發落','自稱與將軍戮力攻秦，卻因小人之言產生嫌隙，姿態謙卑懇切','以武力相脅'],
+    correct:2,
+    explain:'劉邦以退為進，強調自己與項羽本同心攻秦，如今生隙全因「小人之言」，姿態放到最低，成功化解項羽怒氣。' },
+  { id:11, type:'strategy', label:'座次玄機', points:15,
+    q:'宴席「項王項伯東向坐，亞父南向坐，沛公北向坐，張良西向侍」，透露什麼訊息？',
+    options:['座次沒有任何特別含意','依古禮東向為尊，項羽居尊位，劉邦坐最卑的北向，地位懸殊立現','劉邦其實坐在最尊貴的位置','張良與項羽同坐尊位'],
+    correct:1,
+    explain:'古代宴席以東向坐為最尊，項羽、項伯居之；劉邦坐在最卑的北向位，座次清楚顯示此刻項羽居於絕對優勢。' },
+  { id:12, type:'plot', label:'范增舉玦', points:10,
+    q:'宴中范增「舉所佩玉玦以示之者三」是什麼意思？',
+    options:['單純把玩玉飾','向劉邦炫耀珍寶','提醒項羽宴會該結束','以玦諧音「決」，暗示項羽當機立斷，速殺劉邦'],
+    correct:3,
+    explain:'玦與「決」諧音，范增多次舉玦示意，催促項羽下定決心動手，然而項羽「默然不應」，錯失良機。' },
+  { id:13, type:'strategy', label:'項羽的沉默', points:15,
+    q:'面對范增再三示意，項羽為何「默然不應」？',
+    options:['根本沒看到范增的暗示','早已決定要放走劉邦','剛答應項伯善待劉邦，加上劉邦謝罪態度誠懇，使他心軟猶豫','在等待樊噲到來'],
+    correct:2,
+    explain:'項羽前一晚已答應項伯不擊劉邦，此刻劉邦當面謝罪又態度誠懇，使項羽心軟猶豫，正是他優柔寡斷性格的展現。' },
+  { id:14, type:'plot', label:'項莊舞劍', points:10,
+    q:'「項莊舞劍，意在沛公」後來成為什麼樣的成語？比喻什麼？',
+    options:['比喻武藝高強','比喻宴會盡興','比喻表面上做一件事，實際上另有目的','比喻兩人交情深厚'],
+    correct:2,
+    explain:'范增見項羽不動手，便命項莊藉舞劍助興之名行刺殺之實，後世以此比喻言行的真正意圖別有所指。' },
+  { id:15, type:'people', label:'項伯翼蔽', points:10,
+    q:'項莊舞劍時，項伯做了什麼舉動？',
+    options:['出面阻止項莊，公開反對刺殺','也拔劍起舞，並常以身體遮擋劉邦，使項莊無法下手','協助項莊夾擊劉邦','悄悄通知劉邦逃走'],
+    correct:1,
+    explain:'項伯察覺項莊意圖，也拔劍共舞，並「常以身翼蔽沛公」，用自己的身體護住劉邦，使項莊始終找不到下手機會。' },
+  { id:16, type:'plot', label:'樊噲闖帳', points:10,
+    q:'樊噲聽聞情勢危急後，做出了什麼舉動？',
+    options:['悄悄潛入帳中刺探','在帳外靜靜等待劉邦出來','立刻集結大軍攻打項羽','帶劍擁盾闖入軍門，撞倒阻攔的衛士，直入帳中'],
+    correct:3,
+    explain:'樊噲得知劉邦處境危急，不顧衛士阻攔，帶劍擁盾闖入軍門，以側盾撞倒衛士，強行闖入宴會現場，展現過人膽識。' },
+  { id:17, type:'people', label:'樊噲怒目', points:10,
+    q:'樊噲闖帳後「瞋目視項王，頭髮上指，目眥盡裂」，這樣的描寫有什麼作用？',
+    options:['表示樊噲對項羽的敬畏','純粹描述樊噲的長相','誇飾樊噲的怒容氣勢，使項羽也為之震懾，按劍而跽','說明樊噲喝醉了'],
+    correct:2,
+    explain:'這是《史記》著名的誇飾筆法：透過怒目圓睜、頭髮直豎的形象，襯托樊噲的威猛氣勢，連項羽都不自覺「按劍而跽」。' },
+  { id:18, type:'strategy', label:'樊噲陳詞', points:15,
+    q:'樊噲當面指責項羽，主要依據什麼道理？',
+    options:['純粹以武力威嚇項羽','引懷王之約，指出劉邦入關後秋毫無犯、還軍霸上以待項王，有功反被欲誅，於理不合','說項羽的軍隊不堪一擊','要求項羽立刻退位'],
+    correct:1,
+    explain:'樊噲援引懷王之約與劉邦入關後的種種善行，指出項羽若聽信小人之言誅殺有功之人，是自取滅亡之道，說得項羽「未有以應」。' },
+  { id:19, type:'plot', label:'劉邦脫身', points:10,
+    q:'劉邦最後如何脫離險境？',
+    options:['與項羽當面決裂後強行離開','由項伯掩護正面離席','被項羽下令釋放','藉口如廁，招樊噲一同離席，棄車騎、抄小路逃回霸上軍營'],
+    correct:3,
+    explain:'劉邦以如廁為由離席，留張良善後謝罪，自己與樊噲棄車騎、從小路抄近道逃回霸上，驚險逃過一劫。' },
+  { id:20, type:'plot', label:'范增拔劍嘆', points:10,
+    q:'張良代劉邦獻禮後，范增有何反應？',
+    options:['欣然收下玉斗並向項羽道賀','立刻請兵追殺劉邦','拔劍撞破玉斗，怒歎「豎子不足與謀」，預言項羽天下將被劉邦所奪','保持沉默，不發一語'],
+    correct:2,
+    explain:'范增深知放走劉邦後患無窮，收下玉斗後憤而拔劍擊碎，悲憤地說「豎子不足與謀！奪項王天下者，必沛公也」，一語成讖。' },
+];
+
+const TYPE_LABEL = { plot:'情', people:'人', strategy:'智' };
+const PIP_MAP = {
+  1:[4], 2:[0,8], 3:[0,4,8], 4:[0,2,6,8], 5:[0,2,4,6,8], 6:[0,2,3,5,6,8]
+};
+
+/* ============================================================
+   STATE
+============================================================ */
+let state = {
+  chuName:'楚軍', hanName:'漢軍',
+  chu:{ pos:0, score:0, done:false },
+  han:{ pos:0, score:0, done:false },
+  turn:'chu',
+  totalSeconds:1200,
+  timeLeft:1200,
+  timerId:null,
+  paused:false,
+  rolling:false,
+  gameOver:false,
+};
+
+/* ============================================================
+   INIT / NAVIGATION
+============================================================ */
+function startGame(){
+  const chuName = document.getElementById('input-chu-name').value.trim() || '楚軍';
+  const hanName = document.getElementById('input-han-name').value.trim() || '漢軍';
+  let mins = parseInt(document.getElementById('input-minutes').value, 10);
+  if(!mins || mins < 3) mins = 20;
+
+  state = {
+    chuName, hanName,
+    chu:{ pos:0, score:0, done:false },
+    han:{ pos:0, score:0, done:false },
+    turn:'chu',
+    totalSeconds: mins*60,
+    timeLeft: mins*60,
+    timerId:null,
+    paused:false,
+    rolling:false,
+    gameOver:false,
+  };
+
+  document.getElementById('screen-cover').classList.add('hidden');
+  document.getElementById('screen-end').classList.add('hidden');
+  document.getElementById('screen-game').classList.remove('hidden');
+
+  buildBoard();
+  renderAll();
+  startTimer();
+}
+
+function resetGame(){
+  document.getElementById('screen-end').classList.add('hidden');
+  document.getElementById('screen-game').classList.add('hidden');
+  document.getElementById('screen-cover').classList.remove('hidden');
+}
+
+/* ============================================================
+   BOARD
+============================================================ */
+function buildBoard(){
+  const board = document.getElementById('board');
+  board.innerHTML = '';
+  TILES.forEach((tile, i)=>{
+    const row = Math.floor(i/4);
+    const colInRow = i%4;
+    const col = (row % 2 === 1) ? (3-colInRow) : colInRow;
+    const div = document.createElement('div');
+    div.className = 'tile' + (tile.id===1 ? ' start' : '') + (tile.id===20 ? ' finish' : '');
+    div.style.gridRow = (row+1);
+    div.style.gridColumn = (col+1);
+    div.id = 'tile-'+tile.id;
+    div.innerHTML = `
+      <div class="badge ${tile.type}">${TYPE_LABEL[tile.type]}</div>
+      <div class="num">${tile.id.toString().padStart(2,'0')}</div>
+      <div class="label">${tile.label}</div>
+      <div class="tokens" id="tokens-${tile.id}"></div>
+    `;
+    board.appendChild(div);
+  });
+  placeTokens();
+}
+
+function placeTokens(){
+  document.querySelectorAll('.tokens').forEach(el=>el.innerHTML='');
+  const chuTileId = Math.max(1, state.chu.pos || 1);
+  const hanTileId = Math.max(1, state.han.pos || 1);
+  const chuEl = document.getElementById('tokens-'+chuTileId);
+  const hanEl = document.getElementById('tokens-'+hanTileId);
+  if(state.chu.pos > 0 && chuEl) chuEl.innerHTML += `<div class="token chu">${state.chuName[0]}</div>`;
+  if(state.han.pos > 0 && hanEl) hanEl.innerHTML += `<div class="token han">${state.hanName[0]}</div>`;
+}
+
+/* ============================================================
+   RENDER
+============================================================ */
+function renderAll(){
+  renderTurn();
+  renderPower();
+  placeTokens();
+  renderRollButton();
+}
+
+function renderTurn(){
+  const pill = document.getElementById('turn-pill');
+  const isChu = state.turn === 'chu';
+  pill.textContent = '輪到：' + (isChu ? state.chuName : state.hanName);
+  pill.className = 'turn-pill ' + (isChu ? 'chu' : 'han');
+  const rollBtn = document.getElementById('roll-btn');
+  rollBtn.className = 'roll-btn ' + (isChu ? 'chu-color' : '');
+}
+
+function renderPower(){
+  const chuFill = document.getElementById('power-chu');
+  const hanFill = document.getElementById('power-han');
+  const chuVal = Math.max(state.chu.score, 0.0001);
+  const hanVal = Math.max(state.han.score, 0.0001);
+  chuFill.style.flexGrow = chuVal;
+  hanFill.style.flexGrow = hanVal;
+  chuFill.textContent = state.chu.score;
+  hanFill.textContent = state.han.score;
+}
+
+function renderRollButton(){
+  const btn = document.getElementById('roll-btn');
+  const hint = document.getElementById('roll-hint');
+  const team = state.turn === 'chu' ? state.chu : state.han;
+  const teamName = state.turn === 'chu' ? state.chuName : state.hanName;
+
+  if(state.gameOver){ btn.disabled = true; hint.textContent = '遊戲已結束'; return; }
+  if(team.done){
+    btn.disabled = true;
+    hint.textContent = teamName + ' 已抵達鴻門宴終局，換對方繼續前進';
+    return;
+  }
+  btn.disabled = state.rolling;
+  hint.textContent = '輪到 ' + teamName + ' 擲骰，走到哪一格，就挑戰哪一題！';
+}
+
+/* ============================================================
+   TIMER
+============================================================ */
+function startTimer(){
+  updateTimerDisplay();
+  state.timerId = setInterval(()=>{
+    if(state.paused || state.gameOver) return;
+    state.timeLeft--;
+    updateTimerDisplay();
+    if(state.timeLeft <= 0){
+      state.timeLeft = 0;
+      updateTimerDisplay();
+      endGame();
+    }
+  }, 1000);
+}
+
+function updateTimerDisplay(){
+  const m = Math.floor(state.timeLeft/60).toString().padStart(2,'0');
+  const s = Math.floor(state.timeLeft%60).toString().padStart(2,'0');
+  document.getElementById('timer-display').textContent = m+':'+s;
+}
+
+function togglePause(){
+  state.paused = !state.paused;
+  document.getElementById('pause-btn').textContent = state.paused ? '▶' : 'Ⅱ';
+}
+
+/* ============================================================
+   DICE + MOVEMENT
+============================================================ */
+function rollDice(){
+  if(state.rolling || state.gameOver) return;
+  const team = state.turn === 'chu' ? state.chu : state.han;
+  if(team.done){ passTurn(); return; }
+
+  state.rolling = true;
+  renderRollButton();
+
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const finalValue = 1 + Math.floor(Math.random()*6);
+
+  if(reduceMotion){
+    setPips(finalValue);
+    afterRoll(finalValue);
+    return;
+  }
+
+  let ticks = 0;
+  const maxTicks = 10;
+  const cycle = setInterval(()=>{
+    const v = 1 + Math.floor(Math.random()*6);
+    setPips(v);
+    ticks++;
+    if(ticks >= maxTicks){
+      clearInterval(cycle);
+      setPips(finalValue);
+      afterRoll(finalValue);
+    }
+  }, 70);
+}
+
+function setPips(value){
+  const pips = document.querySelectorAll('#dice .pip');
+  pips.forEach(p=>p.classList.remove('on'));
+  (PIP_MAP[value]||[]).forEach(idx=>pips[idx].classList.add('on'));
+}
+
+function afterRoll(value){
+  const teamKey = state.turn;
+  const team = state.turn === 'chu' ? state.chu : state.han;
+  team.pos = Math.min(20, (team.pos || 0) + value);
+  placeTokens();
+
+  const tile = TILES[team.pos - 1];
+  setTimeout(()=>{
+    state.rolling = false;
+    openQuestion(tile, teamKey);
+  }, 250);
+}
+
+/* ============================================================
+   QUESTION MODAL
+============================================================ */
+function openQuestion(tile, teamKey){
+  const teamName = teamKey === 'chu' ? state.chuName : state.hanName;
+  const typeName = { plot:'情節', people:'人物', strategy:'智謀' }[tile.type];
+  const letters = ['Ａ','Ｂ','Ｃ','Ｄ'];
+
+  const optsHtml = tile.options.map((opt,i)=>`
+    <button class="opt-btn" data-idx="${i}" onclick="answerQuestion(${tile.id},'${teamKey}',${i})">
+      <span class="letter">${letters[i]}</span>
+      <span>${opt}</span>
+    </button>
+  `).join('');
+
+  document.getElementById('question-panel').innerHTML = `
+    <div class="q-tag ${tile.type}">${typeName}關卡・第 ${tile.id} 格</div>
+    <div class="q-title">${tile.label}</div>
+    <div class="q-points">答對可獲得 ${tile.points} 勢力值　｜　作答隊伍：${teamName}</div>
+    <div class="q-text">${tile.q}</div>
+    <div class="options" id="options-${tile.id}">${optsHtml}</div>
+    <div class="result-banner" id="result-banner"></div>
+    <div class="explain-box" id="explain-box">${tile.explain}</div>
+    <button class="continue-btn" id="continue-btn" onclick="closeQuestionAndContinue()">繼 續</button>
+  `;
+  document.getElementById('overlay-question').classList.remove('hidden');
+}
+
+function answerQuestion(tileId, teamKey, idx){
+  const tile = TILES.find(t=>t.id===tileId);
+  const optButtons = document.querySelectorAll('#options-'+tileId+' .opt-btn');
+  optButtons.forEach((b,i)=>{
+    b.disabled = true;
+    if(i === tile.correct) b.classList.add('correct');
+    if(i === idx && idx !== tile.correct) b.classList.add('incorrect');
+  });
+
+  const isCorrect = idx === tile.correct;
+  const team = teamKey === 'chu' ? state.chu : state.han;
+  if(isCorrect){ team.score += tile.points; }
+
+  const banner = document.getElementById('result-banner');
+  banner.className = 'result-banner show ' + (isCorrect ? 'ok' : 'bad');
+  banner.textContent = isCorrect ? ('✔ 答對了！獲得 ' + tile.points + ' 勢力值') : '✘ 答錯了，看看正確答案與解說吧';
+
+  document.getElementById('explain-box').classList.add('show');
+  document.getElementById('continue-btn').classList.add('show');
+
+  renderPower();
+}
+
+function closeQuestionAndContinue(){
+  document.getElementById('overlay-question').classList.add('hidden');
+
+  const team = state.turn === 'chu' ? state.chu : state.han;
+  if(team.pos >= 20) team.done = true;
+
+  if(state.chu.done && state.han.done){
+    endGame();
+    return;
+  }
+  if(state.timeLeft <= 0){
+    endGame();
+    return;
+  }
+
+  passTurn();
+}
+
+function passTurn(){
+  state.turn = state.turn === 'chu' ? 'han' : 'chu';
+  const nextTeam = state.turn === 'chu' ? state.chu : state.han;
+  if(nextTeam.done){
+    state.turn = state.turn === 'chu' ? 'han' : 'chu';
+  }
+  renderAll();
+}
+
+/* ============================================================
+   PANELS
+============================================================ */
+function openPanel(which){
+  const map = { 'panel-rules':'overlay-rules', 'panel-chars':'overlay-chars', 'panel-teacher':'overlay-teacher' };
+  document.getElementById(map[which]).classList.remove('hidden');
+}
+function closePanel(id){
+  document.getElementById(id).classList.add('hidden');
+}
+function closeOnBackdrop(evt, id){
+  if(evt.target.id === id) closePanel(id);
+}
+
+/* ============================================================
+   END GAME
+============================================================ */
+function endGame(){
+  if(state.gameOver) return;
+  state.gameOver = true;
+  clearInterval(state.timerId);
+  document.getElementById('overlay-question').classList.add('hidden');
+
+  document.getElementById('screen-game').classList.add('hidden');
+  document.getElementById('screen-end').classList.remove('hidden');
+
+  const chuScore = state.chu.score, hanScore = state.han.score;
+  let title;
+  if(chuScore === hanScore) title = '楚漢勢均力敵';
+  else if(chuScore > hanScore) title = state.chuName + ' 勢力略勝一籌';
+  else title = state.hanName + ' 勢力略勝一籌';
+  document.getElementById('end-title').textContent = title;
+
+  document.getElementById('end-chu-name').textContent = state.chuName;
+  document.getElementById('end-han-name').textContent = state.hanName;
+  document.getElementById('end-chu-score').textContent = chuScore;
+  document.getElementById('end-han-score').textContent = hanScore;
+  document.getElementById('end-power-chu').style.flexGrow = Math.max(chuScore,0.0001);
+  document.getElementById('end-power-han').style.flexGrow = Math.max(hanScore,0.0001);
+
+  buildReview();
+}
+
+function buildReview(){
+  const list = document.getElementById('review-list');
+  list.innerHTML = TILES.map(t=>`
+    <div class="review-item">
+      <div class="rq">${t.id}. ${t.label}｜${t.q}</div>
+      <div class="ra">正解：${t.options[t.correct]}</div>
+      <div>${t.explain}</div>
+    </div>
+  `).join('');
+}
+
+function toggleReview(){
+  document.getElementById('review-list').classList.toggle('show');
+}
+</script>
+</body>
+</html>
