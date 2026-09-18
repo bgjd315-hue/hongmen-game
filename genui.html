@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>鴻門宴｜判斷的移動</title>
+<style>
+:root{--ink:#2b2118;--paper:#f7f0e3;--card:#fffaf1;--red:#8d2d2d;--gold:#b48a45;--muted:#75695e;--line:#d9c8ad;--green:#496451}
+*{box-sizing:border-box} body{margin:0;background:linear-gradient(180deg,#efe2cb,#f8f2e8 35%,#eee1ca);color:var(--ink);font-family:"Noto Serif TC","PingFang TC","Microsoft JhengHei",serif;min-height:100vh}
+.wrap{max-width:880px;margin:auto;padding:24px 18px 70px}.hero{text-align:center;padding:30px 12px 20px}.kicker{letter-spacing:.2em;color:var(--red);font-weight:700}.hero h1{font-size:clamp(30px,6vw,54px);margin:8px 0}.hero p{color:var(--muted);line-height:1.8;margin:8px auto;max-width:650px}
+.progress{display:flex;gap:7px;position:sticky;top:0;padding:10px 0;background:rgba(247,240,227,.9);backdrop-filter:blur(8px);z-index:3}.dot{height:6px;flex:1;background:#d8cbb8;border-radius:9px}.dot.on{background:var(--red)}
+.panel{display:none;background:rgba(255,250,241,.96);border:1px solid var(--line);border-radius:22px;padding:clamp(20px,5vw,38px);box-shadow:0 12px 40px rgba(74,51,28,.09);animation:in .35s ease}.panel.active{display:block}@keyframes in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.step{font-size:13px;letter-spacing:.16em;color:var(--red);font-weight:800}.panel h2{font-size:clamp(24px,4.5vw,34px);margin:8px 0 16px}.lead{font-size:18px;line-height:1.9}.scene{border-left:4px solid var(--gold);background:#f4ead8;padding:16px 18px;border-radius:0 14px 14px 0;line-height:1.9;margin:18px 0}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.choice,.reason,.evidence,.finalChoice{appearance:none;width:100%;text-align:left;border:1px solid var(--line);background:#fffdf8;border-radius:16px;padding:18px;cursor:pointer;color:var(--ink);font:inherit;line-height:1.6;transition:.18s}.choice:hover,.reason:hover,.evidence:hover,.finalChoice:hover,.selected{border-color:var(--red)!important;box-shadow:0 0 0 2px rgba(141,45,45,.09);transform:translateY(-1px)}.choice strong{font-size:23px;color:var(--red)}
+label{display:block;margin:18px 0 8px;font-weight:700}textarea{width:100%;min-height:105px;border:1px solid var(--line);border-radius:14px;background:#fffdf8;padding:14px;font:inherit;font-size:16px;line-height:1.7;resize:vertical}
+button.next{border:0;border-radius:999px;background:var(--red);color:white;padding:13px 24px;font:inherit;font-weight:800;margin-top:20px;cursor:pointer}.next:disabled{opacity:.35;cursor:not-allowed}.ghost{background:transparent!important;color:var(--red)!important;border:1px solid var(--red)!important;margin-left:8px}
+.note{font-size:14px;color:var(--muted);line-height:1.7}.tag{display:inline-block;border:1px solid var(--gold);color:#765c2f;border-radius:999px;padding:4px 10px;font-size:13px;margin:3px}.consequence{font-size:19px;line-height:2;background:#f2e5cf;border-radius:18px;padding:22px}.warning{font-size:13px;color:#815f35;margin-top:8px}.quote{font-size:17px;line-height:1.9}.evidence{margin:9px 0}.evidence small{display:block;color:var(--muted);margin-top:6px}.counter{background:#2f302a;color:#fff8e9;border-radius:20px;padding:25px;margin:18px 0}.counter .q{font-size:22px;line-height:1.7}.counter .label{color:#e8c88e;font-size:13px;letter-spacing:.15em}
+.timeline{position:relative;margin:24px 0;padding-left:26px}.timeline:before{content:"";position:absolute;left:7px;top:5px;bottom:5px;width:2px;background:var(--line)}.t{position:relative;margin:0 0 24px}.t:before{content:"";position:absolute;left:-24px;top:7px;width:12px;height:12px;border-radius:50%;background:var(--red)}.t b{color:var(--red)}.summary{background:#fffdf8;border:1px solid var(--line);padding:20px;border-radius:16px;line-height:1.85}.teacher{margin-top:25px;padding:16px;border:1px dashed var(--gold);border-radius:14px;color:#5e503f}.hidden{display:none}
+@media(max-width:620px){.grid{grid-template-columns:1fr}.wrap{padding:12px 12px 50px}.panel{border-radius:18px;padding:20px}.hero{padding-top:18px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="hero">
+<div class="kicker">《鴻門宴》思辨實驗</div>
+<h1>判斷的移動</h1>
+<p>先做決定，不急著找標準答案。看見後果、回到文本、接受反例，最後再決定：你還站在原來的位置嗎？</p>
+</header>
+<div class="progress" id="progress"></div>
+
+<section class="panel active" data-step="0">
+<div class="step">01｜困難的決定</div><h2>如果你是項羽，殺不殺劉邦？</h2>
+<div class="scene">劉邦親自來到鴻門謝罪。范增卻一再示意：此人今日不除，將來可能成為大患。你必須在資訊不完整的情況下做決定。</div>
+<div class="grid">
+<button class="choice" data-choice="kill"><strong>殺</strong><br>先除掉可能的後患</button>
+<button class="choice" data-choice="spare"><strong>不殺</strong><br>此刻沒有足夠理由殺他</button>
+</div>
+<p class="note">沒有正解。系統會記住你的第一次判斷。</p>
+</section>
+
+<section class="panel" data-step="1">
+<div class="step">02｜留下理由</div><h2>你真正守護的是什麼？</h2>
+<p class="lead">選一個最接近你的核心理由。這會改變後面出現的「後果」與「反例」。</p>
+<div class="grid">
+<button class="reason" data-reason="risk">未來風險<br><small>不能忽略可能造成的大患</small></button>
+<button class="reason" data-reason="justice">當下是非<br><small>決定要有足夠的正當理由</small></button>
+<button class="reason" data-reason="trust">信義與名聲<br><small>承諾、謝罪、信任仍有價值</small></button>
+<button class="reason" data-reason="power">權力與大局<br><small>天下局勢不能只看眼前情義</small></button>
+</div>
+<label for="reasonText">再用自己的話寫一句理由</label>
+<textarea id="reasonText" placeholder="我選擇……因為……"></textarea>
+<button class="next" id="toConsequence">看看我的選擇會帶來什麼</button>
+</section>
+
+<section class="panel" data-step="2">
+<div class="step">03｜承擔後果</div><h2>如果事情往這個方向發展……</h2>
+<div class="consequence" id="consequence"></div>
+<div class="warning">※ 這裡是「反事實教學推演」，用來檢驗判斷，不宣稱這就是歷史必然會發生的結果。</div>
+<label for="afterConsequence">看到這個後果，你最不舒服或最猶豫的是哪一點？</label>
+<textarea id="afterConsequence" placeholder="我開始擔心……／我仍然認為……"></textarea>
+<button class="next" id="toEvidence">先不要改答案，回到原文</button>
+</section>
+
+<section class="panel" data-step="3">
+<div class="step">04｜回到文本</div><h2>不要替自己找答案，替自己的判斷找證據</h2>
+<p class="lead">請選一則最能支持、挑戰或複雜化你原先判斷的文本。</p>
+<div id="evidenceList"></div>
+<label for="evidenceWhy">這句話怎麼影響你的判斷？</label>
+<textarea id="evidenceWhy" placeholder="這段文字讓我注意到……"></textarea>
+<button class="next" id="toCounter">接受一個反例</button>
+</section>
+
+<section class="panel" data-step="4">
+<div class="step">05｜反例挑戰</div><h2>現在，把你的理由推到更困難的地方</h2>
+<div class="counter"><div class="label">系統依你的第一次選擇與核心理由提出挑戰</div><div class="q" id="counterQ"></div></div>
+<label for="counterReply">你怎麼回應這個反例？</label>
+<textarea id="counterReply" placeholder="我會維持／修正原來的理由，因為……"></textarea>
+<button class="next" id="toFinal">重新判斷</button>
+</section>
+
+<section class="panel" data-step="5">
+<div class="step">06｜第二次判斷</div><h2>你還站在原來的位置嗎？</h2>
+<p class="lead" id="firstChoiceReminder"></p>
+<div class="grid">
+<button class="finalChoice" data-final="keep">維持原判斷<br><small>但我的理由更完整了</small></button>
+<button class="finalChoice" data-final="change">改變判斷<br><small>有些證據真的動搖了我</small></button>
+<button class="finalChoice" data-final="uncertain">我更不確定<br><small>兩邊都有不能輕易放棄的價值</small></button>
+</div>
+<label for="finalReason">現在的你，會怎麼說？</label>
+<textarea id="finalReason" placeholder="我現在認為……因為……"></textarea>
+<button class="next" id="toTrail">生成「我的思考軌跡」</button>
+</section>
+
+<section class="panel" data-step="6">
+<div class="step">07｜我的思考軌跡</div><h2>重要的不是答案，而是你的判斷怎麼移動</h2>
+<div class="timeline" id="timeline"></div>
+<div class="summary" id="summary"></div>
+<div class="teacher"><b>全班討論可以只問一句：</b><br>「是哪一件事，讓你的判斷移動了？如果沒有移動，你的理由有沒有改變？」</div>
+<button class="next" id="restart">再走另一條路</button>
+</section>
+</div>
+
+<script>
+const state={choice:null,reason:null,reasonText:"",evidence:null,final:null};
+const steps=[...document.querySelectorAll(".panel")];
+const progress=document.getElementById("progress");
+for(let i=0;i<steps.length;i++){const d=document.createElement("div");d.className="dot"+(i===0?" on":"");progress.appendChild(d)}
+function go(n){steps.forEach((s,i)=>s.classList.toggle("active",i===n));[...progress.children].forEach((d,i)=>d.classList.toggle("on",i<=n));window.scrollTo({top:document.querySelector(".progress").offsetTop,behavior:"smooth"})}
+function selectGroup(selector,el){document.querySelectorAll(selector).forEach(x=>x.classList.remove("selected"));el.classList.add("selected")}
+document.querySelectorAll(".choice").forEach(b=>b.addEventListener("click",()=>{state.choice=b.dataset.choice;selectGroup(".choice",b);setTimeout(()=>go(1),180)}));
+document.querySelectorAll(".reason").forEach(b=>b.addEventListener("click",()=>{state.reason=b.dataset.reason;selectGroup(".reason",b)}));
+
+const pathData={
+kill:{
+risk:{c:"你選擇先除掉可能的後患。假設性推演：劉邦被殺後，短期競爭風險下降；但其他諸侯也可能重新評估：向項羽屈服、謝罪，是否仍能換得安全？威懾增加，信任可能下降。",q:"如果一個人目前尚未傷害你，只因未來『可能』成為威脅，你可以先除掉他嗎？"},
+justice:{c:"你認為劉邦已有足夠可疑行動，必須承擔代價。假設性推演：處置劉邦能回應軍事與政治疑慮；但若證據仍不完整，這個決定也可能變成『先定罪，再找理由』。",q:"當證據不足、風險卻很大時，應該先保安全，還是先守住判斷的程序？"},
+trust:{c:"你不相信這場謝罪是真心。假設性推演：拒絕相信劉邦，可以避免被策略性的示弱欺騙；但如果投降、謝罪都無法換得安全，未來還有人願意談判嗎？",q:"如果『道歉可能是假的』就足以處置一個人，那什麼情況下，道歉才可能重新建立信任？"},
+power:{c:"你把天下大局放在個人情義之前。假設性推演：清除競爭者可能讓權力更集中；但政治秩序也可能更依賴恐懼，而不是承諾與認同。",q:"如果權力主要靠『大家怕你』維持，它和真正的服從有什麼不同？"}
+},
+spare:{
+risk:{c:"你知道有風險，但不願只因可能性就殺人。假設性推演：劉邦暫時保全，項羽維持寬厚形象；但如果劉邦日後坐大，今天的克制也可能被視為錯失時機。",q:"如果風險機率不高，但一旦發生後果極大，你還會堅持不先處置嗎？"},
+justice:{c:"你認為此刻沒有足夠正當理由殺劉邦。假設性推演：項羽守住『不能因猜疑就殺人』的界線；但政治判斷常常必須在證據不完整時做決定。",q:"如果等到證據完全確定就太遲了，正當程序與及時防衛該怎麼取捨？"},
+trust:{c:"你願意讓謝罪與承諾仍然有意義。假設性推演：劉邦獲得離開鴻門的機會，談判表面成立；但善意也可能被更擅長策略的人利用。",q:"如果你後來知道對方的道歉主要是在爭取時間，你會認為當初相信他就是錯的嗎？"},
+power:{c:"你認為政治不能只靠消滅對手。假設性推演：不殺劉邦可能保留諸侯對項羽承諾的信任；但也讓潛在競爭者繼續累積力量。",q:"如果你的寬容最後讓更多人陷入戰爭，寬容還一定比較仁慈嗎？"}
+}};
+
+const evidence=[
+{t:"范增數目項王，舉所佩玉玦以示之者三，項王默然不應。",n:"范增一再示意，項羽卻沒有回應。"},
+{t:"范增曰：『君王為人不忍。……不者，若屬皆且為所虜！』",n:"范增把項羽的『不忍』視為政治危機。"},
+{t:"項伯亦拔劍起舞，常以身翼蔽沛公，莊不得擊。",n:"即使決定動手，權力場中仍有不同立場與阻力。"},
+{t:"沛公曰：『君為我呼入，吾得兄事之。』",n:"劉邦知道如何運用關係與策略化解危機。"},
+{t:"樊噲曰：『勞苦而功高如此……欲誅有功之人，此亡秦之續耳。竊為大王不取也。』",n:"樊噲把問題重新框成『有功者是否應被誅』。"},
+{t:"沛公起如廁，因招樊噲出。……脫身獨騎。",n:"劉邦最後選擇脫身，顯示他並未把安全完全交給宴席上的承諾。"}
+];
+const list=document.getElementById("evidenceList");
+evidence.forEach((e,i)=>{const b=document.createElement("button");b.className="evidence";b.innerHTML='<div class="quote">'+e.t+'</div><small>'+e.n+'</small>';b.onclick=()=>{state.evidence=i;selectGroup(".evidence",b)};list.appendChild(b)});
+
+document.getElementById("toConsequence").onclick=()=>{
+if(!state.reason){alert("先選一個最接近你的核心理由。");return}
+state.reasonText=document.getElementById("reasonText").value.trim();
+document.getElementById("consequence").textContent=pathData[state.choice][state.reason].c;go(2)};
+document.getElementById("toEvidence").onclick=()=>go(3);
+document.getElementById("toCounter").onclick=()=>{
+if(state.evidence===null){alert("先選一則文本證據。");return}
+document.getElementById("counterQ").textContent=pathData[state.choice][state.reason].q;go(4)};
+document.getElementById("toFinal").onclick=()=>{
+const first=state.choice==="kill"?"殺劉邦":"不殺劉邦";
+document.getElementById("firstChoiceReminder").innerHTML="你第一次選的是：<b>"+first+"</b>。現在你已經看過推演後果、回到文本，也接受了一次反例挑戰。";go(5)};
+document.querySelectorAll(".finalChoice").forEach(b=>b.addEventListener("click",()=>{state.final=b.dataset.final;selectGroup(".finalChoice",b)}));
+document.getElementById("toTrail").onclick=()=>{
+if(!state.final){alert("先選擇：維持、改變，或更不確定。");return}
+const initial=state.choice==="kill"?"殺劉邦":"不殺劉邦";
+const reasonNames={risk:"未來風險",justice:"當下是非",trust:"信義與名聲",power:"權力與大局"};
+const finalNames={keep:"維持原判斷",change:"改變判斷",uncertain:"變得更不確定"};
+const after=document.getElementById("afterConsequence").value.trim()||"我看見了原選擇可能付出的代價。";
+const why=document.getElementById("evidenceWhy").value.trim()||"這段文本讓我的判斷多了一層證據。";
+const reply=document.getElementById("counterReply").value.trim()||"反例讓我重新檢查原本的理由。";
+const finalReason=document.getElementById("finalReason").value.trim()||"我需要把後果、證據與價值一起考慮。";
+document.getElementById("timeline").innerHTML=
+'<div class="t"><b>第一次判斷｜'+initial+'</b><br>'+(state.reasonText||"核心考量："+reasonNames[state.reason])+'</div>'+
+'<div class="t"><b>看見後果</b><br>'+after+'</div>'+
+'<div class="t"><b>回到文本</b><br>「'+evidence[state.evidence].t+'」<br>'+why+'</div>'+
+'<div class="t"><b>反例挑戰</b><br>'+pathData[state.choice][state.reason].q+'<br>'+reply+'</div>'+
+'<div class="t"><b>第二次判斷｜'+finalNames[state.final]+'</b><br>'+finalReason+'</div>';
+let movement=state.final==="keep"?"你的答案沒有移動，但理由可能已經變得更能承受反例。":state.final==="change"?"你允許證據與反例改變第一次判斷。改變不是失敗，而是推理留下的痕跡。":"你沒有急著把複雜問題變簡單。『更不確定』也可能代表你開始同時看見兩邊的價值。";
+document.getElementById("summary").innerHTML="<b>這次真正發生的學習：</b><br>"+movement+"<br><br><span class='tag'>選擇</span><span class='tag'>後果</span><span class='tag'>文本證據</span><span class='tag'>反例</span><span class='tag'>再判斷</span>";
+go(6)};
+document.getElementById("restart").onclick=()=>location.reload();
+</script>
+</body>
+</html>
