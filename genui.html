@@ -18,7 +18,9 @@
 <p class="note">重要的不是最後站在哪一邊，而是你能不能說出：什麼條件、哪一段文本，讓你的判斷變得更完整。</p>
 <div id="finalReflection" class="scene" style="margin-top:22px">
 <b>最後的省思回饋</b><br>
-請用自己的話留下三個簡短回答。完成後，系統會產生一個適合截圖回傳的完成畫面。
+請先留下姓名，再用自己的話完成三個簡短回答。完成後，系統會產生一個適合截圖回傳的完成畫面。
+<label>姓名</label>
+<input id="studentName" type="text" placeholder="請輸入姓名" style="width:100%;padding:14px 16px;margin:8px 0 16px;border:1px solid var(--line);border-radius:12px;font:inherit;background:#fffdf8;color:var(--ink)">
 <label>① 這場歷史事件中，哪一個「情勢的偶然」最影響結果？</label>
 <textarea id="rf1" placeholder="我認為……"></textarea>
 <label>② 項羽的哪些性格，使某些選擇更容易發生？</label>
@@ -36,6 +38,6 @@
 </div><script>
 let s={c:"",q:"",f:""};const ps=[...document.querySelectorAll(".panel")],prog=document.getElementById("progress");ps.forEach((_,i)=>prog.innerHTML+='<div class="dot '+(i?'':'on')+'"></div>');function show(n){ps.forEach((p,i)=>p.classList.toggle("active",i===n));[...prog.children].forEach((d,i)=>d.classList.toggle("on",i<=n));scrollTo({top:document.querySelector(".progress").offsetTop,behavior:"smooth"})}document.querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>{s.c=b.dataset.c;document.querySelectorAll("[data-c]").forEach(x=>x.classList.remove("selected"));b.classList.add("selected")});document.querySelectorAll("[data-q]").forEach(b=>b.onclick=()=>{s.q=b.dataset.q;document.querySelectorAll("[data-q]").forEach(x=>x.classList.remove("selected"));b.classList.add("selected")});document.querySelectorAll("[data-f]").forEach(b=>b.onclick=()=>{s.f=b.dataset.f;document.querySelectorAll("[data-f]").forEach(x=>x.classList.remove("selected"));b.classList.add("selected")});
 function next(n){if(n===1&&!s.c)return alert("先選擇殺或不殺。");if(n===1){document.getElementById("challenge").innerHTML=s.c==="殺"?"你擁兵四十萬，劉邦只有十萬；他如今親自前來謝罪。對一個靠勇武與聲望立身、重視榮譽與情義形象的項羽而言，<b>在占盡優勢時殺掉前來謝罪的人，會不會也影響他所珍視的領袖形象？</b>":"范增已把劉邦視為將來最大的競爭者，曹無傷的密報又指向「欲王關中」。如果此刻放過他，<b>項羽的自信與不忍，會不會讓他低估一個善於應變、又已先入關中的對手？</b>"}if(n===3&&(!s.q||!s.f))return alert("先選一段文本，也留下第二次判斷。");if(n===4){let p=s.c==="殺"?"當一個尚未成為威脅的人，未來很可能挑戰你時，現在先防備他，到什麼程度才算合理？":"當你明明占有優勢時，給潛在對手空間，是自信、情義，還是可能的輕敵？";document.getElementById("philo").textContent=p}show(n)}
-function completeReflection(){let a=["rf1","rf2","rf3"].map(id=>document.getElementById(id).value.trim());if(a.some(x=>!x))return alert("請完成三個省思後，再生成回傳畫面。");document.getElementById("reflectionSummary").innerHTML='<div><b>情勢的偶然：</b>'+a[0]+'</div><div><b>性格與選擇：</b>'+a[1]+'</div><div><b>我的理解與借鏡：</b>'+a[2]+'</div>';document.getElementById("finalReflection").style.display="none";document.getElementById("completionCard").style.display="block";document.getElementById("completionCard").scrollIntoView({behavior:"smooth",block:"start"})}
+function completeReflection(){let name=document.getElementById("studentName").value.trim();let a=["rf1","rf2","rf3"].map(id=>document.getElementById(id).value.trim());if(!name)return alert("請先填寫姓名。");if(a.some(x=>!x))return alert("請完成三個省思後，再生成回傳畫面。");document.getElementById("reflectionSummary").innerHTML='<div><b>姓名：</b>'+name+'</div><div><b>情勢的偶然：</b>'+a[0]+'</div><div><b>性格與選擇：</b>'+a[1]+'</div><div><b>我的理解與借鏡：</b>'+a[2]+'</div>';document.getElementById("finalReflection").style.display="none";document.getElementById("completionCard").style.display="block";document.getElementById("completionCard").scrollIntoView({behavior:"smooth",block:"start"})}
 function finish(){let v=id=>document.getElementById(id).value.trim()||"（尚未留下文字）";document.getElementById("trail").innerHTML='<div><b>進入歷史：</b>我第一次選「'+s.c+'」。<br>'+v("r1")+'</div><div><b>選擇撞牆：</b>'+v("r2")+'</div><div><b>回到文本：</b>我選了「'+s.q+'」<br>'+v("r3")+'</div><div><b>第二次判斷：</b>'+s.f+'</div><div><b>回到今天：</b>'+v("r4")+'</div><div><b>最後留下的問題：</b>'+document.getElementById("philo").textContent+'<br>'+v("r5")+'</div>';show(5)}
 </script></body></html>
