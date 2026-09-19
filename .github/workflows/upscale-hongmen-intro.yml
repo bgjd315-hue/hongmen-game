@@ -1,0 +1,41 @@
+name: Upscale Hongmen intro
+on:
+  push:
+    paths:
+      - '.github/workflows/upscale-hongmen-intro.yml'
+permissions:
+  contents: write
+jobs:
+  upscale:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install pillow
+      - name: Upscale only the existing intro image
+        run: |
+          python - <<'PY'
+          from PIL import Image, ImageFilter
+          p='assets/hongmen-intro.webp'
+          im=Image.open(p).convert('RGB')
+          w,h=im.size
+          if w < 1200:
+              scale=max(2, (1200+w-1)//w)
+              out=im.resize((w*scale,h*scale), Image.Resampling.LANCZOS)
+              out=out.filter(ImageFilter.UnsharpMask(radius=0.8, percent=105, threshold=3))
+              out.save(p, 'WEBP', quality=92, method=6)
+              print('upscaled', (w,h), '->', out.size)
+          else:
+              print('already high resolution', (w,h))
+          PY
+      - name: Commit enhanced image only
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/hongmen-intro.webp
+          git diff --cached --quiet || git commit -m "Enhance intro image resolution only"
+          git push
