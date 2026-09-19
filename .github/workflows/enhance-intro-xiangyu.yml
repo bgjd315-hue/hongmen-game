@@ -1,0 +1,44 @@
+name: Enhance intro and Xiangyu color
+on:
+  push:
+    paths:
+      - '.github/workflows/enhance-intro-xiangyu.yml'
+permissions:
+  contents: write
+jobs:
+  enhance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install pillow
+      - name: Enhance only intro and Xiangyu
+        run: |
+          python - <<'PY'
+          from PIL import Image, ImageEnhance, ImageFilter
+          def enhance(path, min_width, saturation=1.24, contrast=1.06, sharpness=1.14):
+              im=Image.open(path).convert('RGB')
+              w,h=im.size
+              if w < min_width:
+                  scale=max(2, (min_width+w-1)//w)
+                  im=im.resize((w*scale,h*scale), Image.Resampling.LANCZOS)
+              im=ImageEnhance.Color(im).enhance(saturation)
+              im=ImageEnhance.Contrast(im).enhance(contrast)
+              im=ImageEnhance.Sharpness(im).enhance(sharpness)
+              im=im.filter(ImageFilter.UnsharpMask(radius=0.7, percent=85, threshold=3))
+              im.save(path, 'WEBP', quality=94, method=6)
+              print(path, (w,h), '->', im.size)
+          enhance('assets/hongmen-intro.webp', 1600, saturation=1.22, contrast=1.05, sharpness=1.12)
+          enhance('assets/xiangyu.webp', 900, saturation=1.28, contrast=1.07, sharpness=1.16)
+          PY
+      - name: Commit enhanced images only
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/hongmen-intro.webp assets/xiangyu.webp
+          git diff --cached --quiet || git commit -m "Enhance intro and Xiangyu saturation only"
+          git push
